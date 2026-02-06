@@ -1,4 +1,4 @@
-# CAAL_S26_Project_KalmanFilter_ChaiGPT
+# CAAL S26 Project KalmanFilter
 
 ## Project Group: ChaiGPT
 
