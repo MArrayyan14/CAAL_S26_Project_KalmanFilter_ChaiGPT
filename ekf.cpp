@@ -255,7 +255,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    cout<< " EXTENDED KALMAN FILTER - Milestone 2\n"
+    cout<< " EXTENDED KALMAN FILTER - Milestone 2\n";
        
 
     int N = 0;
