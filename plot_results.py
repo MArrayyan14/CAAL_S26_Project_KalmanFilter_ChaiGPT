@@ -66,9 +66,7 @@ def extract_joint_positions(measurements, joint_idx):
         'pz': measurements[:, start + 2]
     }
 
-# ============================================================================
 # PLOT 1: POSITION - TRUE VS NOISY VS LKF VS EKF
-# ============================================================================
 
 def plot_position_comparison(joint_idx, true_pos, noisy_pos, lkf, ekf, time, output_dir):
     """Position: True vs Noisy vs LKF vs EKF"""
@@ -119,9 +117,7 @@ def plot_position_comparison(joint_idx, true_pos, noisy_pos, lkf, ekf, time, out
                 dpi=300, bbox_inches='tight')
     plt.close()
 
-# ============================================================================
 # PLOT 2: VELOCITY - LKF VS EKF
-# ============================================================================
 
 def plot_velocity_comparison(joint_idx, lkf, ekf, time, output_dir):
     """Velocity: LKF vs EKF"""
@@ -168,9 +164,7 @@ def plot_velocity_comparison(joint_idx, lkf, ekf, time, output_dir):
                 dpi=300, bbox_inches='tight')
     plt.close()
 
-# ============================================================================
 # PLOT 3: ACCELERATION - LKF VS EKF
-# ============================================================================
 
 def plot_acceleration_comparison(joint_idx, lkf, ekf, time, output_dir):
     """Acceleration: LKF vs EKF"""
@@ -217,9 +211,7 @@ def plot_acceleration_comparison(joint_idx, lkf, ekf, time, output_dir):
                 dpi=300, bbox_inches='tight')
     plt.close()
 
-# ============================================================================
 # PLOT 4: JERK - LKF VS EKF
-# ============================================================================
 
 def plot_jerk_comparison(joint_idx, lkf, ekf, time, output_dir):
     """Jerk: LKF vs EKF"""
@@ -266,9 +258,7 @@ def plot_jerk_comparison(joint_idx, lkf, ekf, time, output_dir):
                 dpi=300, bbox_inches='tight')
     plt.close()
 
-# ============================================================================
 # PLOT 5: POSITION ERROR SUMMARY
-# ============================================================================
 
 def plot_position_error_summary(joint_idx, lkf, ekf, true_pos, noisy_pos, time, output_dir):
     """Position Error Summary"""
@@ -352,9 +342,7 @@ def plot_position_error_summary(joint_idx, lkf, ekf, true_pos, noisy_pos, time, 
                 dpi=300, bbox_inches='tight')
     plt.close()
 
-# ============================================================================
 # PLOT 6: VELOCITY ERROR SUMMARY
-# ============================================================================
 
 def plot_velocity_error_summary(joint_idx, lkf, ekf, time, output_dir):
     """Velocity Error Summary"""
@@ -415,9 +403,7 @@ def plot_velocity_error_summary(joint_idx, lkf, ekf, time, output_dir):
                 dpi=300, bbox_inches='tight')
     plt.close()
 
-# ============================================================================
 # PLOT 7: ACCELERATION ERROR SUMMARY
-# ============================================================================
 
 def plot_acceleration_error_summary(joint_idx, lkf, ekf, time, output_dir):
     """Acceleration Error Summary"""
@@ -478,9 +464,7 @@ def plot_acceleration_error_summary(joint_idx, lkf, ekf, time, output_dir):
                 dpi=300, bbox_inches='tight')
     plt.close()
 
-# ============================================================================
 # PLOT 8: JERK ERROR SUMMARY
-# ============================================================================
 
 def plot_jerk_error_summary(joint_idx, lkf, ekf, time, output_dir):
     """Jerk Error Summary"""
@@ -541,9 +525,7 @@ def plot_jerk_error_summary(joint_idx, lkf, ekf, time, output_dir):
                 dpi=300, bbox_inches='tight')
     plt.close()
 
-# ============================================================================
 # MAIN
-# ============================================================================
 
 def main():
     parser = argparse.ArgumentParser(description='Generate 8 plots for Milestone 2')
@@ -576,7 +558,7 @@ def main():
     
     # Verify row counts
     if not (true_all.shape[0] == noisy_all.shape[0] == lkf_all.shape[0] == ekf_all.shape[0]):
-        print("\n⚠ ERROR: Row count mismatch!")
+        print("\n ERROR: Row count mismatch!")
         sys.exit(1)
     
     print(f"  ✓ All files have {lkf_all.shape[0]} rows - MATCH!\n")
@@ -605,7 +587,7 @@ def main():
     plot_jerk_error_summary(args.joint, lkf, ekf, time, output_dir)
     
     print("\n" + "="*70)
-    print("✅ ALL 8 PLOTS GENERATED SUCCESSFULLY!")
+    print("ALL 8 PLOTS GENERATED SUCCESSFULLY!")
     print("="*70 + "\n")
     print("Output files:")
     print("  1. joint_0_1_position_comparison.png")
