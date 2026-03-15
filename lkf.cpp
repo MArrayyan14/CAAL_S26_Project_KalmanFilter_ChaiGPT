@@ -1,10 +1,6 @@
 /*
  * Linear Kalman Filter - Milestone 2
  * Team ChaiGPT: Laiba (31736), Ameer (30535), Usman (29126), Arrayyan (30557)
- * 
- * UPDATED: Handles CSV with header row
- * - Input: 3041 rows (1 header + 3040 data)
- * - Output: 3040 rows (no header, data only)
  */
 
 #include <iostream>
