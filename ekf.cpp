@@ -21,9 +21,7 @@ const int    TOTAL_STATES     = 276;
 const int    TOTAL_MEAS       = 69;
 const double PI = 3.14159265358979323846;
 
-// ============================================================================
-// MANUAL ARCTAN2  (correct quadrant handling in both branches)
-// ============================================================================
+// MANUAL ARCTAN2  
 double arctan2_manual(double y, double x) {
     if (x == 0.0 && y == 0.0) return 0.0;
 
@@ -49,9 +47,8 @@ double arctan2_manual(double y, double x) {
     
     return (y < 0) ? -angle : angle;
 }
-// ============================================================================
+
 // CSV LOADING
-// ============================================================================
 vector<VectorXd> loadMeasurements(const string& fn, int& N) {
     vector<VectorXd> data;
     ifstream f(fn);
@@ -69,9 +66,7 @@ vector<VectorXd> loadMeasurements(const string& fn, int& N) {
     return data;
 }
 
-// ============================================================================
 // CARTESIAN → SPHERICAL  (elevation phi = arctan2(pz, rho_xy))
-// ============================================================================
 VectorXd cartToSph(const VectorXd& c) {
     VectorXd s(TOTAL_MEAS);
     for (int j = 0; j < NUM_JOINTS; ++j) {
@@ -84,9 +79,7 @@ VectorXd cartToSph(const VectorXd& c) {
     return s;
 }
 
-// ============================================================================
 // SYSTEM MATRICES
-// ============================================================================
 MatrixXd buildF(double dt) {
     MatrixXd F = MatrixXd::Zero(TOTAL_STATES, TOTAL_STATES);
     double dt2=dt*dt, dt3=dt2*dt;
@@ -113,9 +106,7 @@ MatrixXd buildQ(double dt, double sig) {
     return Q;
 }
 
-// ============================================================================
 // NONLINEAR MEASUREMENT FUNCTION h(x)
-// ============================================================================
 VectorXd h_func(const VectorXd& x) {
     VectorXd z(TOTAL_MEAS);
     for (int j=0; j<NUM_JOINTS; ++j) {
@@ -128,9 +119,7 @@ VectorXd h_func(const VectorXd& x) {
     return z;
 }
 
-// ============================================================================
 // JACOBIAN ∂h/∂x
-// ============================================================================
 MatrixXd computeJacobian(const VectorXd& x) {
     MatrixXd H = MatrixXd::Zero(TOTAL_MEAS, TOTAL_STATES);
 
@@ -169,9 +158,7 @@ MatrixXd computeJacobian(const VectorXd& x) {
     return H;
 }
 
-// ============================================================================
 // EKF
-// ============================================================================
 void runEKF(const vector<VectorXd>& meas_cart,
             const vector<VectorXd>& meas_sph,
             const MatrixXd& F, const MatrixXd& Q, const MatrixXd& R,
@@ -189,13 +176,6 @@ void runEKF(const vector<VectorXd>& meas_cart,
     }
     MatrixXd P = MatrixXd::Identity(TOTAL_STATES, TOTAL_STATES);
 
-    // Innovation norm threshold for skipping an update.
-    // Each measurement channel has units: r [m], theta [rad], phi [rad].
-    // A healthy 69-D innovation with sigma ~0.05 m / 0.005 rad has
-    // normalized squared norm ~69 (chi-squared median).
-    // We skip if the raw (unnormalized) norm exceeds skip_threshold.
-    // 5.0 m/rad total is very generous — only catches frames where the
-    // filter is completely lost (e.g. near-singularity corrupted frames).
     const double skip_threshold = 1e6; // Only catch absolute divergence
 
     int skipped = 0;
@@ -204,11 +184,10 @@ void runEKF(const vector<VectorXd>& meas_cart,
         if ((k+1)%500==0 || k==N-1)
             cout << "\r  Frame " << (k+1) << "/" << N << flush;
 
-        // ── Predict ────────────────────────────────────────────────────────
         x = F * x;
         P = F * P * F.transpose() + Q;
 
-        // ── Innovation ─────────────────────────────────────────────────────
+   
         VectorXd y = meas_sph[k] - h_func(x);
 
         // Wrap angles to [-pi, pi]
@@ -228,7 +207,7 @@ void runEKF(const vector<VectorXd>& meas_cart,
             continue;
         }
 
-        // ── Kalman Gain ─────────────────────────────────────────────────────
+   
         MatrixXd Hk  = computeJacobian(x);
         MatrixXd PHt = P * Hk.transpose();
         MatrixXd S   = Hk * PHt + R;
@@ -243,8 +222,6 @@ void runEKF(const vector<VectorXd>& meas_cart,
 
         // K = (S^{-1} * H * P)^T  solved without explicit inversion
         MatrixXd K = ldlt.solve(PHt.transpose()).transpose();  // 276×69
-
-        // ── Update ─────────────────────────────────────────────────────────
         x = x + K * y;
 
         // Joseph form: guarantees P stays positive semi-definite
@@ -260,9 +237,7 @@ void runEKF(const vector<VectorXd>& meas_cart,
              << (100.0*skipped/N) << "%) due to large innovations or decomp failure\n";
 }
 
-// ============================================================================
 // SAVE
-// ============================================================================
 void saveStates(const string& fn, const vector<VectorXd>& states) {
     ofstream f(fn);
     if (!f.is_open()) { cerr << "ERROR: Cannot write " << fn << "\n"; exit(1); }
@@ -273,18 +248,15 @@ void saveStates(const string& fn, const vector<VectorXd>& states) {
     }
 }
 
-// ============================================================================
 // MAIN
-// ============================================================================
 int main(int argc, char* argv[]) {
     if (argc < 3) {
         cerr << "Usage: " << argv[0] << " <input.csv> <output.csv>\n";
         return 1;
     }
 
-    cout << "\n========================================\n"
-         << " EXTENDED KALMAN FILTER - Milestone 2\n"
-         << "========================================\n\n";
+    cout<< " EXTENDED KALMAN FILTER - Milestone 2\n"
+       
 
     int N = 0;
     auto meas_cart = loadMeasurements(argv[1], N);
@@ -296,7 +268,6 @@ int main(int argc, char* argv[]) {
     meas_sph.reserve(N);
     for (auto& m : meas_cart) meas_sph.push_back(cartToSph(m));
 
-    // ── Parameters ─────────────────────────────────────────────────────────
     double dt  = 0.01;   // 100 Hz
     double sig = 0.1;    // process noise sigma_jerk
 
@@ -326,6 +297,6 @@ int main(int argc, char* argv[]) {
 
     saveStates(argv[2], states);
     cout << "  Saved " << states.size() << " rows to " << argv[2] << "\n"
-         << "\n=== SUCCESS ===\n\n";
+         << "SUCCESS\n";
     return 0;
 }
