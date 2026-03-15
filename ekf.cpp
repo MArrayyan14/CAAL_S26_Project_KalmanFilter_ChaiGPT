@@ -22,7 +22,7 @@ const int    TOTAL_MEAS       = 69;
 const double PI = 3.14159265358979323846;
 
 // ============================================================================
-// FIX 1 – MANUAL ARCTAN2  (correct quadrant handling in both branches)
+// MANUAL ARCTAN2  (correct quadrant handling in both branches)
 // ============================================================================
 double arctan2_manual(double y, double x) {
     if (x == 0.0 && y == 0.0) return 0.0;
@@ -70,7 +70,7 @@ vector<VectorXd> loadMeasurements(const string& fn, int& N) {
 }
 
 // ============================================================================
-// FIX 2 – CARTESIAN → SPHERICAL  (elevation phi = arctan2(pz, rho_xy))
+// CARTESIAN → SPHERICAL  (elevation phi = arctan2(pz, rho_xy))
 // ============================================================================
 VectorXd cartToSph(const VectorXd& c) {
     VectorXd s(TOTAL_MEAS);
@@ -79,7 +79,7 @@ VectorXd cartToSph(const VectorXd& c) {
         double px=c(i), py=c(i+1), pz=c(i+2);
         s(i)   = sqrt(px*px + py*py + pz*pz);
         s(i+1) = arctan2_manual(py, px);
-        s(i+2) = arctan2_manual(pz, sqrt(px*px + py*py));  // FIX 2
+        s(i+2) = arctan2_manual(pz, sqrt(px*px + py*py)); 
     }
     return s;
 }
@@ -114,7 +114,7 @@ MatrixXd buildQ(double dt, double sig) {
 }
 
 // ============================================================================
-// FIX 2 – NONLINEAR MEASUREMENT FUNCTION h(x)
+// NONLINEAR MEASUREMENT FUNCTION h(x)
 // ============================================================================
 VectorXd h_func(const VectorXd& x) {
     VectorXd z(TOTAL_MEAS);
@@ -123,18 +123,18 @@ VectorXd h_func(const VectorXd& x) {
         double px=x(sb), py=x(sb+4), pz=x(sb+8);
         z(mb)   = sqrt(px*px + py*py + pz*pz);
         z(mb+1) = arctan2_manual(py, px);
-        z(mb+2) = arctan2_manual(pz, sqrt(px*px+py*py)); // FIX 2
+        z(mb+2) = arctan2_manual(pz, sqrt(px*px+py*py)); 
     }
     return z;
 }
 
 // ============================================================================
-// FIX 3 + FIX 4 + FIX 6 – JACOBIAN ∂h/∂x
+// JACOBIAN ∂h/∂x
 // ============================================================================
 MatrixXd computeJacobian(const VectorXd& x) {
     MatrixXd H = MatrixXd::Zero(TOTAL_MEAS, TOTAL_STATES);
 
-    // FIX 6: eps_rxy = 0.01 m instead of 1e-8.
+    // eps_rxy = 0.01 m instead of 1e-8.
     // theta entries = ±1/rho_xy^2.
     //   eps=1e-8  → max entry = 1e16  (causes enormous Kalman gain → spikes)
     //   eps=0.01  → max entry = 1e4   (large but bounded)
@@ -149,7 +149,7 @@ MatrixXd computeJacobian(const VectorXd& x) {
         if (r      < eps_r  ) r      = eps_r;
         if (rho_xy < eps_rxy) rho_xy = eps_rxy;
         double r2   = r*r;
-        double rxy2 = rho_xy*rho_xy;   // FIX 4: eps-protected denominator
+        double rxy2 = rho_xy*rho_xy;  
 
         // ∂r/∂[px,py,pz]
         H(mb,   sb  ) = px/r;
@@ -157,12 +157,11 @@ MatrixXd computeJacobian(const VectorXd& x) {
         H(mb,   sb+8) = pz/r;
 
         // ∂θ/∂[px,py,pz]
-        H(mb+1, sb  ) = -py/rxy2;   // FIX 4: rxy2 not raw px^2+py^2
+        H(mb+1, sb  ) = -py/rxy2;   
         H(mb+1, sb+4) =  px/rxy2;
         H(mb+1, sb+8) =  0.0;
 
         // ∂φ/∂[px,py,pz]   for φ = arctan2(pz, rho_xy)
-        // FIX 3: correct signs  (original had all three negated)
         H(mb+2, sb  ) = -(px*pz)/(r2*rho_xy);   // NEGATIVE
         H(mb+2, sb+4) = -(py*pz)/(r2*rho_xy);   // NEGATIVE
         H(mb+2, sb+8) =   rho_xy/r2;             // POSITIVE
@@ -221,18 +220,7 @@ void runEKF(const vector<VectorXd>& meas_cart,
             while (y(mb+2) < -PI) y(mb+2) += 2*PI;
         }
 
-        // FIX 8: Skip update entirely if innovation norm is unreasonably large.
-        //
-        // WHY NOT CLIP:
-        //   Clipping y to ±limit but keeping the full gain K means P thinks a
-        //   real correction was applied but only a tiny one was. P continues
-        //   growing from Q accumulation → gain saturates → divergence.
-        //
-        // WHY SKIP IS CORRECT:
-        //   If we skip, x stays at x_predict and P stays at P_predict.
-        //   P will be slightly larger than ideal for this step, but it is
-        //   CONSISTENT with the actual state uncertainty, so the next good
-        //   measurement will correct it properly.
+        
         double innov_norm = y.norm();
         if (innov_norm > skip_threshold) {
             ++skipped;
@@ -245,15 +233,8 @@ void runEKF(const vector<VectorXd>& meas_cart,
         MatrixXd PHt = P * Hk.transpose();
         MatrixXd S   = Hk * PHt + R;
 
-        // FIX 7: Use LDLT (not LLT).
-        // LLT requires S to be STRICTLY positive definite. Near singularities,
-        // S can be nearly singular and LLT silently returns garbage via
-        // llt.solve() without throwing an exception.
-        // LDLT handles near-singular S correctly via a pivoted factorization.
         LDLT<MatrixXd> ldlt(S);
 
-        // FIX 7 cont: Explicit success check. If LDLT fails, skip this update
-        // rather than applying a corrupted gain — same rationale as FIX 8.
         if (ldlt.info() != Success) {
             ++skipped;
             states.push_back(x);
@@ -319,7 +300,7 @@ int main(int argc, char* argv[]) {
     double dt  = 0.01;   // 100 Hz
     double sig = 0.1;    // process noise sigma_jerk
 
-    // FIX 5: block-diagonal R — r in metres, angles in radians
+    // block-diagonal R — r in metres, angles in radians
     // sigma_r   = 0.05 m   (50 mm range noise)
     // sigma_ang = 0.005 rad (≈ 5 mm at r=1 m, i.e. 0.29 degrees)
     double sigma_r   = 0.05;
