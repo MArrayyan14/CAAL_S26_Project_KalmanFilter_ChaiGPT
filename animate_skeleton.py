@@ -2,10 +2,6 @@
 """
 3D Full-Body Animation Script - Milestone 2
 Team ChaiGPT: Laiba (31736), Ameer (30535), Usman (29126), Arrayyan (30557)
-
-UPDATED: Handles CSV with header row
-- Input: 3041 rows total (1 header + 3040 data)
-- Skips header automatically
 """
 
 import numpy as np
@@ -242,7 +238,7 @@ def main():
     create_animation(true_pos, noisy_pos, lkf_pos, ekf_pos, output_file, args.fps, args.duration)
     
     print("\n" + "="*70)
-    print("✅ ANIMATION COMPLETE!")
+    print("ANIMATION COMPLETE!")
     print("="*70)
     print(f"\nGenerated file: {output_file}\n")
 
