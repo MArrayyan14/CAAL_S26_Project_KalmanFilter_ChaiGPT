@@ -22,9 +22,7 @@ const int STATES_PER_JOINT = 12;
 const int TOTAL_STATES = 276;
 const int TOTAL_MEAS = 69;
 
-// ============================================================================
 // CSV LOADING WITH HEADER SKIP
-// ============================================================================
 
 vector<VectorXd> loadMeasurements(const string& filename, int& num_frames) {
     vector<VectorXd> measurements;
@@ -68,9 +66,7 @@ vector<VectorXd> loadMeasurements(const string& filename, int& num_frames) {
     return measurements;
 }
 
-// ============================================================================
 // MATRICES
-// ============================================================================
 
 MatrixXd buildF(double dt) {
     MatrixXd F = MatrixXd::Zero(TOTAL_STATES, TOTAL_STATES);
@@ -135,9 +131,7 @@ MatrixXd buildH() {
     return H;
 }
 
-// ============================================================================
 // KALMAN FILTER
-// ============================================================================
 
 void runLKF(const vector<VectorXd>& measurements,
             const MatrixXd& F, const MatrixXd& Q,
@@ -187,9 +181,7 @@ void runLKF(const vector<VectorXd>& measurements,
     cout << endl;
 }
 
-// ============================================================================
 // SAVE (NO HEADER)
-// ============================================================================
 
 void saveStates(const string& filename, const vector<VectorXd>& states) {
     ofstream file(filename);
@@ -211,19 +203,14 @@ void saveStates(const string& filename, const vector<VectorXd>& states) {
     file.close();
 }
 
-// ============================================================================
 // MAIN
-// ============================================================================
 
 int main(int argc, char* argv[]) {
     if (argc < 3) {
         cerr << "Usage: " << argv[0] << " <input_csv> <output_csv>" << endl;
         return 1;
     }
-    
-    cout << "\n========================================" << endl;
     cout << "  LINEAR KALMAN FILTER - Milestone 2  " << endl;
-    cout << "========================================\n" << endl;
     
     // Load (skips header)
     int num_frames = 0;
@@ -259,7 +246,7 @@ int main(int argc, char* argv[]) {
     // Save (no header)
     saveStates(argv[2], states);
     cout << "  Saved " << states.size() << " rows to " << argv[2] << endl;
-    cout << "\n=== SUCCESS ===\n" << endl;
+    cout << "SUCCESS" << endl;
     
     return 0;
 }
