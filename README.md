@@ -79,6 +79,6 @@ qemu-riscv64 ./kalman_filter
 - Ameer Abdullah (30535)
 - Usman Iftikhar (29126)
 - Arrayyan Asad (30557)
--
--Institution: Institute of Business Administration (IBA), Karachi
--Course: Computer Architecture and Assembly Language (Spring 2026)
+
+**Institution:** Institute of Business Administration (IBA), Karachi  
+**Course:** Computer Architecture and Assembly Language (Spring 2026)
