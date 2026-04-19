@@ -56,23 +56,25 @@ The project includes visualization scripts that generate:
 - **Error Heatmaps:** Visualizing accuracy across all 23 joints.
 - **Derivative Analysis:** Smooth estimation of Velocity, Acceleration, and Jerk.
 
-Prerequisites
+## Prerequisites
 GCC Toolchain: riscv64-unknown-elf-gcc
 Emulator: qemu-riscv64 (User mode)
 Build and Run
 code
 Bash
-# Clone the repository
+### Clone the repository
 git clone https://github.com/MArrayyan14/CAAL_S26_Project_KalmanFilter_ChaiGPT.git
 cd CAAL_S26_Project_KalmanFilter_ChaiGPT/milestone-3
 
-# Assemble and Link
+### Assemble and Link
 riscv64-unknown-elf-gcc -march=rv64g -mabi=lp64d src/*.s -o kalman_filter
 
-# Execute
+### Execute
 qemu-riscv64 ./kalman_filter
 
-Team ChaiGPT
+---
+
+## Team ChaiGPT
 Laiba Irfan (31736)
 Ameer Abdullah (30535)
 Usman Iftikhar (29126)
