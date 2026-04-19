@@ -75,10 +75,10 @@ qemu-riscv64 ./kalman_filter
 ---
 
 ## Team ChaiGPT
-Laiba Irfan (31736)
-Ameer Abdullah (30535)
-Usman Iftikhar (29126)
-Arrayyan Iqbal (30557)
-
-Institution: Institute of Business Administration (IBA), Karachi
-Course: Computer Architecture and Assembly Language (Spring 2026)
+- Laiba Irfan (31736)
+- Ameer Abdullah (30535)
+- Usman Iftikhar (29126)
+- Arrayyan Asad (30557)
+-
+-Institution: Institute of Business Administration (IBA), Karachi
+-Course: Computer Architecture and Assembly Language (Spring 2026)
