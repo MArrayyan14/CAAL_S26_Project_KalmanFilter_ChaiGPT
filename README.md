@@ -5,7 +5,7 @@ This repository contains the **Milestone 4** submission of our Kalman Filter pro
 ## Team ChaiGPT
 - Laiba Irfan (31736)
 - Ameer Abdullah (30535)
-- M Usman (29126)
+- M Usman Iftikhar (29126)
 - M Arrayyan Asad (30557)
 ---
 
