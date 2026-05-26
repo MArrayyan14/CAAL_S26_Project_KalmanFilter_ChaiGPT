@@ -156,12 +156,6 @@ Run:
 make run_lkf_vector
 ```
 
-Run (20 frames):
-
-```bash
-make run_lkf_est
-```
-
 ---
 
 ## Extended Kalman Filter
@@ -178,11 +172,6 @@ Run:
 make run_ekf_vector
 ```
 
-Run(20 frames):
-
-```bash
-make run_ekf_est
-```
 
 ---
 
